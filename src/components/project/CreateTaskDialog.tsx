@@ -123,8 +123,7 @@ export default function CreateTaskDialog({ children, projectId, defaultStatus = 
   async function onSubmit(values: FormValues) {
     setIsLoading(true);
     try {
-      const taskData: CreateTaskData = {
-        ...values,
+      const taskData: CreateTaskData = { ...values,
         dueDate: values.dueDate ? values.dueDate : undefined, // Ensure dueDate is correctly passed
       };
       await createTask(projectId, taskData);
@@ -137,6 +136,7 @@ export default function CreateTaskDialog({ children, projectId, defaultStatus = 
       setIsOpen(false);
     } catch (error: any) {
       toast({
+
         title: "Failed to Create Task",
         description: error.message || "An unknown error occurred.",
         variant: "destructive",
@@ -144,6 +144,7 @@ export default function CreateTaskDialog({ children, projectId, defaultStatus = 
     } finally {
       setIsLoading(false);
     }
+
   }
 
   return (
