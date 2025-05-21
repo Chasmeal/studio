@@ -1,4 +1,15 @@
-import type { Timestamp } from "firebase/firestore";
+import { Timestamp } from "firebase/firestore";
+
+// Type guard to check if a value is a Firestore Timestamp
+function isTimestamp(value: any): value is Timestamp {
+  // Check if the value is an object and has the properties of a Timestamp
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'toDate' in value &&
+    typeof value.toDate === 'function'
+  );
+}
 
 export interface Project {
   id: string;
@@ -9,6 +20,11 @@ export interface Project {
   memberIds: string[];
   createdAt: Date; // Converted from Firebase Timestamp
 }
+
+// Define a type that maps Timestamp properties to Date properties
+type ConvertTimestamps<T> = {
+  [K in keyof T]: T[K] extends Timestamp ? Date : T[K];
+};
 
 export type TaskStatus = "todo" | "in-progress" | "done";
 export type TaskPriority = "low" | "medium" | "high";
@@ -32,12 +48,12 @@ export interface Task {
 }
 
 // Helper to convert Firestore Timestamps in document data to JS Dates
-export function convertTimestamps<T extends Record<string, any>>(data: T): T {
-  const newData = { ...data };
+export function convertTimestamps<T extends Record<string, any>>(data: T): ConvertTimestamps<T> {
+  const newData: any = { ...data }; // Use any for the intermediate object
   for (const key in newData) {
-    if (newData[key] instanceof Timestamp) {
+    if (isTimestamp(newData[key])) {
       newData[key] = (newData[key] as Timestamp).toDate();
     }
   }
-  return newData;
+  return newData as ConvertTimestamps<T>; // Assert the final object to the mapped type
 }

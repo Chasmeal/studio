@@ -11,6 +11,21 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
+const requiredConfig = [
+  'apiKey',
+  'authDomain',
+  'projectId',
+  'storageBucket',
+  'messagingSenderId',
+  'appId',
+];
+
+requiredConfig.forEach((key) => {
+  if (!(firebaseConfig as any)[key]) {
+    console.log('Missing Firebase config: ${key}');
+  }
+})
+
 let app: FirebaseApp;
 if (!getApps().length) {
   app = initializeApp(firebaseConfig);
